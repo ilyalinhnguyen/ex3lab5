@@ -30,6 +30,17 @@ jobs:
           npm install --ignore-scripts
           cd frontend && npm install --ignore-scripts --legacy-peer-deps && cd ..
 
+      - name: Verify package files exist
+        run: |
+          echo "Checking for package files..."
+          ls -la package.json package-lock.json 2>/dev/null || echo "Root package files not found"
+          ls -la frontend/package.json frontend/package-lock.json 2>/dev/null || echo "Frontend package files not found"
+          echo "Node modules check:"
+          [ -d "node_modules" ] && echo "Root node_modules exists ($(du -sh node_modules | cut -f1))" || echo "Root node_modules missing"
+          [ -d "frontend/node_modules" ] && echo "Frontend node_modules exists ($(du -sh frontend/node_modules | cut -f1))" || echo "Frontend node_modules missing"
+          echo "Sample vulnerable package check:"
+          grep -A 2 "express-jwt" package.json || echo "express-jwt not found in package.json"
+
       - name: Generate SBOM
         uses: aquasecurity/trivy-action@0.28.0
         with:
@@ -38,6 +49,16 @@ jobs:
           format: 'cyclonedx'
           output: 'trivy-sbom.json'
           scanners: 'vuln,license'
+          trivy-config: 'trivy.yaml'
+          exit-code: '0'
+
+      - name: Test scan (table output for debugging)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          scanners: 'vuln'
           trivy-config: 'trivy.yaml'
           exit-code: '0'
 
@@ -51,6 +72,7 @@ jobs:
           scanners: 'vuln,secret'
           trivy-config: 'trivy.yaml'
           exit-code: '0'
+          hide-progress: 'false'
 
       - name: Download HTML template
         run: |

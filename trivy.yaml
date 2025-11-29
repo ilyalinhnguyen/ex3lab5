@@ -32,12 +32,11 @@ ignore-unfixed: false
 format: table
 
 # Skip directories (optional)
+# Note: node_modules removed from skip-dirs as Trivy needs to scan installed packages for vulnerabilities
 skip-dirs:
-  - node_modules
   - .git
   - build
   - dist
-  - frontend/node_modules
   - frontend/dist
 
 # Skip files (optional)
