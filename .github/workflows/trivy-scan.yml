@@ -42,11 +42,17 @@ jobs:
           trivy-config: 'trivy.yaml'
           exit-code: '0'
 
-      - name: Convert JSON to HTML report
-        run: |
-          docker run --rm -v ${{ github.workspace }}:/work aquasec/trivy:latest \
-            convert --format template --template "@contrib/html.tpl" \
-            --input /work/trivy-results.json --output /work/trivy-report.html
+      - name: Generate HTML report
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'repo'
+          scan-ref: '.'
+          format: 'template'
+          template: '@contrib/html.tpl'
+          output: 'trivy-report.html'
+          scanners: 'vuln,secret,misconfig'
+          trivy-config: 'trivy.yaml'
+          exit-code: '0'
 
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4
