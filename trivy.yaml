@@ -41,8 +41,7 @@ skip-dirs:
   - frontend/dist
 
 # Skip files (optional)
-skip-files:
-  - package-lock.json
+# Note: package-lock.json removed from skip-files as Trivy needs it to detect vulnerabilities
 
 # Timeout for scan
 timeout: 10m0s
