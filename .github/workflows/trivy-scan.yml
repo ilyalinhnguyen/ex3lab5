@@ -1,0 +1,71 @@
+name: Trivy Security Scan
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  trivy-scan:
+    name: Trivy Security Scan
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      security-events: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate SBOM
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'repo'
+          scan-ref: '.'
+          format: 'cyclonedx'
+          output: 'trivy-sbom.json'
+          scanners: 'vuln,license'
+          trivy-config: 'trivy.yaml'
+          exit-code: '0'
+
+      - name: Scan for vulnerabilities (JSON)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'repo'
+          scan-ref: '.'
+          format: 'json'
+          output: 'trivy-results.json'
+          scanners: 'vuln,secret,misconfig'
+          trivy-config: 'trivy.yaml'
+          exit-code: '0'
+
+      - name: Convert JSON to HTML report
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/work aquasec/trivy:latest \
+            convert --format template --template "@contrib/html.tpl" \
+            --input /work/trivy-results.json --output /work/trivy-report.html
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-sbom
+          path: trivy-sbom.json
+          retention-days: 30
+
+      - name: Upload vulnerability scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-results
+          path: trivy-results.json
+          retention-days: 30
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-html-report
+          path: trivy-report.html
+          retention-days: 30
+

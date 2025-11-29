@@ -1,0 +1,48 @@
+# Trivy configuration file
+# This configuration is used for scanning the repository
+
+# Scan configuration
+scanners:
+  - vuln
+  - secret
+  - misconfig
+  - license
+
+# Vulnerability types to scan
+vuln-type:
+  - os
+  - library
+
+# Severity levels to report
+severity:
+  - UNKNOWN
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+
+# Exit code when vulnerabilities are found
+exit-code: 1
+
+# Ignore unpatched vulnerabilities (set to false to show all)
+ignore-unfixed: false
+
+# Output format
+format: table
+
+# Skip directories (optional)
+skip-dirs:
+  - node_modules
+  - .git
+  - build
+  - dist
+  - frontend/node_modules
+  - frontend/dist
+
+# Skip files (optional)
+skip-files:
+  - package-lock.json
+
+# Timeout for scan
+timeout: 10m0s
+
