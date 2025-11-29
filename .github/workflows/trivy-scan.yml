@@ -27,8 +27,6 @@ jobs:
 
       - name: Install dependencies and generate lock files
         run: |
-          # Override package-lock=false from .npmrc to generate lock files for Trivy
-          # Temporarily disable .npmrc setting by using npm config
           npm config set package-lock true
           npm install --ignore-scripts
           cd frontend
@@ -81,17 +79,7 @@ jobs:
           scanners: 'vuln,license'
           trivy-config: 'trivy.yaml'
           exit-code: '0'
-
-      - name: Test scan (table output for debugging)
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'table'
-          scanners: 'vuln'
-          trivy-config: 'trivy.yaml'
-          exit-code: '0'
-
+          
       - name: Scan for vulnerabilities (JSON)
         uses: aquasecurity/trivy-action@0.28.0
         with:
