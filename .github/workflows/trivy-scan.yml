@@ -76,10 +76,10 @@ jobs:
           scan-ref: '.'
           format: 'cyclonedx'
           output: 'trivy-sbom.json'
-          scanners: 'vuln,license'
+          scanners: 'vuln,license,misconfig'
           trivy-config: 'trivy.yaml'
           exit-code: '0'
-          
+
       - name: Scan for vulnerabilities (JSON)
         uses: aquasecurity/trivy-action@0.28.0
         with:
@@ -87,7 +87,7 @@ jobs:
           scan-ref: '.'
           format: 'json'
           output: 'trivy-results.json'
-          scanners: 'vuln,secret'
+          scanners: 'vuln,secret,misconfig'
           trivy-config: 'trivy.yaml'
           exit-code: '0'
           hide-progress: 'false'
@@ -105,7 +105,7 @@ jobs:
           format: 'template'
           template: '@contrib/html.tpl'
           output: 'trivy-report.html'
-          scanners: 'vuln,secret'
+          scanners: 'vuln,secret,misconfig'
           trivy-config: 'trivy.yaml'
           exit-code: '0'
 
