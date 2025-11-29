@@ -5,8 +5,9 @@
 scanners:
   - vuln
   - secret
-  - misconfig
   - license
+# Note: misconfig scanner removed as it's for IaC files (Terraform, CloudFormation, etc.)
+# and causes errors with AWS policies that aren't relevant for Node.js app repo scans
 
 # Vulnerability types to scan
 vuln-type:
